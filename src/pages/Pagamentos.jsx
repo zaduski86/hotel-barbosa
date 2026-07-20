@@ -5,6 +5,7 @@ import { runOCR } from '../utils/ocr'
 import { fmt, metodoPagMap } from '../utils/format'
 import toast from 'react-hot-toast'
 import dayjs from 'dayjs'
+import { X, Paperclip, CheckCircle2, KeyRound, Banknote, CreditCard, Landmark, Check } from 'lucide-react'
 
 function ModalPagamento({ reserva, onClose, onSave }) {
   const [foto, setFoto] = useState(null)
@@ -105,7 +106,7 @@ function ModalPagamento({ reserva, onClose, onSave }) {
             <h3>Registrar pagamento</h3>
             <div style={{ fontSize: 12, color: 'var(--text3)' }}>{reserva.hospedes?.nome} — Quarto #{reserva.quartos?.numero}</div>
           </div>
-          <button className="btn btn-ghost btn-icon" onClick={onClose}>✕</button>
+          <button className="btn btn-ghost btn-icon" onClick={onClose}><X size={16} /></button>
         </div>
         <div className="modal-body">
           <div style={{ display: 'grid', gridTemplateColumns: fotoPreview ? '1fr 1fr' : '1fr', gap: 16 }}>
@@ -119,7 +120,7 @@ function ModalPagamento({ reserva, onClose, onSave }) {
               {!fotoPreview ? (
                 <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''}`}>
                   <input {...getInputProps()} />
-                  <div className="dropzone-icon">📎</div>
+                  <div className="dropzone-icon"><Paperclip size={28} color="var(--text3)" style={{marginBottom:8}} /></div>
                   <p>Cole (Ctrl+V), arraste ou clique para anexar comprovante</p>
                   <small>Foto do PIX, cartão, transferência...</small>
                 </div>
@@ -132,7 +133,7 @@ function ModalPagamento({ reserva, onClose, onSave }) {
                       <span style={{ fontSize: 12, color: 'var(--text2)' }}>Lendo comprovante...</span>
                     </div>
                   )}
-                  {ocr && !ocrLoading && <div className="alert alert-success" style={{ marginTop: 8 }}>✅ Dados preenchidos automaticamente</div>}
+                  {ocr && !ocrLoading && <div className="alert alert-success" style={{ marginTop: 8 }}><CheckCircle2 size={16} style={{marginRight:6}} />Dados preenchidos automaticamente</div>}
                   <button className="btn btn-danger btn-sm" style={{ marginTop: 6 }} onClick={() => { setFoto(null); setFotoPreview(null); setOcr(null) }}>Remover comprovante</button>
                 </div>
               )}
@@ -148,7 +149,7 @@ function ModalPagamento({ reserva, onClose, onSave }) {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                   {Object.entries(metodoPagMap).map(([k, v]) => (
                     <div key={k} onClick={() => set('metodo', k)} style={{ padding: '8px 10px', borderRadius: 8, cursor: 'pointer', border: `1.5px solid ${form.metodo === k ? 'var(--accent)' : 'var(--border)'}`, background: form.metodo === k ? 'var(--accent-light)' : 'var(--surface2)', fontSize: 12, fontWeight: form.metodo === k ? 600 : 400, color: form.metodo === k ? 'var(--accent)' : 'var(--text2)', textAlign: 'center', transition: 'all .15s' }}>
-                      {k === 'pix' ? '🔑' : k === 'dinheiro' ? '💵' : k === 'cartao_credito' ? '💳' : k === 'cartao_debito' ? '💳' : '🏦'} {v}
+                      {k === 'pix' ? <KeyRound size={18} /> : k === 'dinheiro' ? <Banknote size={18} /> : k === 'cartao_credito' ? <CreditCard size={18} /> : k === 'cartao_debito' ? <CreditCard size={18} /> : <Landmark size={18} />} {v}
                     </div>
                   ))}
                 </div>
@@ -163,7 +164,7 @@ function ModalPagamento({ reserva, onClose, onSave }) {
         <div className="modal-footer">
           <button className="btn btn-secondary" onClick={onClose}>Cancelar</button>
           <button className="btn btn-primary" onClick={salvar} disabled={loading || ocrLoading}>
-            {loading ? <span className="spinner"></span> : '✅ Confirmar pagamento'}
+            {loading ? <span className="spinner"></span> : <><Check size={14} style={{marginRight:6}} />Confirmar pagamento</>}
           </button>
         </div>
       </div>
@@ -224,7 +225,7 @@ export default function Pagamentos() {
 
       <div className="card">
         {loading ? <div className="loading-center"><div className="spinner"></div></div> :
-         reservas.length === 0 ? <div className="empty-state"><div className="empty-icon">💳</div><p>Nenhum recebimento neste período</p></div> : (
+         reservas.length === 0 ? <div className="empty-state"><div className="empty-icon"><CreditCard size={40} color="var(--text3)" strokeWidth={1.5} /></div><p>Nenhum recebimento neste período</p></div> : (
           <div className="table-wrap">
             <table>
               <thead><tr><th>Hóspede</th><th>Quarto</th><th>Total</th><th>Pago</th><th>Saldo</th><th>Status</th><th>Comprovantes</th><th>Ações</th></tr></thead>
@@ -246,7 +247,7 @@ export default function Pagamentos() {
                       <td>
                         <span className="badge badge-gray">{r.pagamentos?.length || 0} reg.</span>
                         {r.pagamentos?.some(p => p.comprovante_url) && (
-                          <span className="badge badge-blue" style={{ marginLeft: 4 }}>📎</span>
+                          <span className="badge badge-blue" style={{ marginLeft: 4 }}><Paperclip size={11} /></span>
                         )}
                       </td>
                       <td>

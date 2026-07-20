@@ -4,6 +4,7 @@ import { fmt, statusReservaMap } from '../utils/format'
 import { baixarRecibo, gerarLinkWhatsApp, gerarReciboPDF } from '../utils/pdf'
 import toast from 'react-hot-toast'
 import dayjs from 'dayjs'
+import { Search, Receipt, Download, MessageCircle } from 'lucide-react'
 
 export default function Recibos() {
   const [reservas, setReservas] = useState([])
@@ -51,13 +52,16 @@ export default function Recibos() {
       <div className="flex-between mb-4">
         <div className="flex gap-2">
           <input type="month" value={mes} onChange={e => setMes(e.target.value)} style={{ width: 'auto' }} />
-          <input placeholder="🔍 Buscar por hóspede ou código..." value={busca} onChange={e => setBusca(e.target.value)} style={{ maxWidth: 260 }} />
+          <div style={{ position: 'relative' }}>
+            <Search size={14} color="var(--text3)" style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)' }} />
+            <input placeholder="Buscar por hóspede ou código..." value={busca} onChange={e => setBusca(e.target.value)} style={{ maxWidth: 260, paddingLeft: 32 }} />
+          </div>
         </div>
       </div>
 
       <div className="card">
         {loading ? <div className="loading-center"><div className="spinner"></div></div> :
-         reservas.length === 0 ? <div className="empty-state"><div className="empty-icon">🧾</div><p>Nenhuma reserva neste período</p></div> : (
+         reservas.length === 0 ? <div className="empty-state"><div className="empty-icon"><Receipt size={40} color="var(--text3)" strokeWidth={1.5} /></div><p>Nenhuma reserva neste período</p></div> : (
           <div className="table-wrap">
             <table>
               <thead><tr><th>Código</th><th>Hóspede</th><th>Quarto</th><th>Período</th><th>Total</th><th>Status</th><th>Ações</th></tr></thead>
@@ -77,8 +81,8 @@ export default function Recibos() {
                       <td><span className={`badge ${s?.badge}`}>{s?.label}</span></td>
                       <td>
                         <div className="flex gap-2">
-                          <button className="btn btn-secondary btn-sm" onClick={() => gerarPDF(r)}>⬇️ PDF</button>
-                          <button className="btn btn-success btn-sm" onClick={() => enviarWhatsapp(r)}>📱 WhatsApp</button>
+                          <button className="btn btn-secondary btn-sm" onClick={() => gerarPDF(r)}><Download size={14} style={{ marginRight: 4 }} />PDF</button>
+                          <button className="btn btn-success btn-sm" onClick={() => enviarWhatsapp(r)}><MessageCircle size={14} style={{ marginRight: 4 }} />WhatsApp</button>
                         </div>
                       </td>
                     </tr>

@@ -2,8 +2,10 @@ import { useState, useEffect, useCallback } from 'react'
 import { DndContext, DragOverlay, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { useDraggable, useDroppable } from '@dnd-kit/core'
 import { supabase } from '../lib/supabase'
+import { Calendar, Plus, Eye, LogOut, Check, X, MoreHorizontal, ArrowUpDown } from 'lucide-react'
 import { RoomIcon, statusColors } from '../components/ui/RoomIcon'
 import { fmt, statusQuartoMap } from '../utils/format'
+import { ModalNovaReserva, ModalCheckout, ModalDetalhesReserva } from './Pages'
 import toast from 'react-hot-toast'
 import dayjs from 'dayjs'
 
@@ -43,7 +45,7 @@ function DraggableRoom({ quarto, onAction }) {
           <>
             <div className="room-guest-name">{reserva.hospedes?.nome || '—'}</div>
             <div className="room-guest-dates">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <Calendar size={11} />
               {fmt.date(reserva.data_entrada)} → {fmt.date(reserva.data_saida)}
             </div>
             <div className="pag-indicator" style={{ marginTop: 4 }}>
@@ -70,36 +72,36 @@ function DraggableRoom({ quarto, onAction }) {
         <div className="room-actions">
           {status === 'disponivel' && (
             <div className="room-action-btn" title="Nova reserva" onClick={() => onAction('nova_reserva', quarto)}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <Plus size={13} />
             </div>
           )}
           {(status === 'ocupado' || status === 'checkin') && (
             <>
               <div className="room-action-btn" title="Ver detalhes" onClick={() => onAction('ver', quarto)}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <Eye size={13} />
               </div>
               <div className="room-action-btn" title="Check-out" onClick={() => onAction('checkout', quarto)}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                <LogOut size={13} />
               </div>
             </>
           )}
           {status === 'pre_reserva' && (
             <>
               <div className="room-action-btn" title="Confirmar reserva" onClick={() => onAction('confirmar', quarto)}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20,6 9,17 4,12"/></svg>
+                <Check size={13} />
               </div>
               <div className="room-action-btn" title="Cancelar" onClick={() => onAction('cancelar', quarto)}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                <X size={13} />
               </div>
             </>
           )}
           {status === 'limpeza' && (
             <div className="room-action-btn" title="Marcar como disponível" onClick={() => onAction('disponivel', quarto)}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20,6 9,17 4,12"/></svg>
+              <Check size={13} />
             </div>
           )}
           <div className="room-action-btn" title="Editar status" onClick={() => onAction('status', quarto)}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+            <MoreHorizontal size={13} />
           </div>
         </div>
       </div>
@@ -118,12 +120,15 @@ function DroppableRoom({ quarto, children }) {
   )
 }
 
-export default function MapaQuartos({ onNovaReserva, onVerReserva }) {
+export default function MapaQuartos() {
   const [quartos, setQuartos] = useState([])
   const [loading, setLoading] = useState(true)
   const [filtro, setFiltro] = useState('todos')
   const [dragAtivo, setDragAtivo] = useState(null)
   const [modalStatus, setModalStatus] = useState(null)
+  const [modalNovaReserva, setModalNovaReserva] = useState(null)
+  const [modalDetalhes, setModalDetalhes] = useState(null)
+  const [modalCheckout, setModalCheckout] = useState(null)
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }))
 
@@ -162,8 +167,8 @@ export default function MapaQuartos({ onNovaReserva, onVerReserva }) {
   const quartosFiltrados = filtro === 'todos' ? quartos : quartos.filter(q => (q.status_efetivo || q.status) === filtro)
 
   const handleAction = async (action, quarto) => {
-    if (action === 'nova_reserva') { onNovaReserva?.(quarto); return }
-    if (action === 'ver') { onVerReserva?.(quarto.reserva_ativa); return }
+    if (action === 'nova_reserva') { setModalNovaReserva(quarto); return }
+    if (action === 'ver') { setModalDetalhes({ ...quarto.reserva_ativa, quartos: { numero: quarto.numero } }); return }
     if (action === 'status') { setModalStatus(quarto); return }
     if (action === 'disponivel') {
       await supabase.from('quartos').update({ status: 'disponivel' }).eq('id', quarto.id)
@@ -171,7 +176,7 @@ export default function MapaQuartos({ onNovaReserva, onVerReserva }) {
       load()
       return
     }
-    if (action === 'checkout') { onVerReserva?.(quarto.reserva_ativa, 'checkout'); return }
+    if (action === 'checkout') { setModalCheckout(quarto.reserva_ativa); return }
     if (action === 'confirmar') {
       await supabase.from('reservas').update({ status: 'confirmada' }).eq('id', quarto.reserva_ativa?.id)
       toast.success('Reserva confirmada!')
@@ -255,11 +260,14 @@ export default function MapaQuartos({ onNovaReserva, onVerReserva }) {
       </DndContext>
 
       <div style={{ marginTop: 14, padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" strokeWidth="2"><path d="M5 9l4-4 4 4"/><path d="M9 5v14"/><path d="M19 15l-4 4-4-4"/><path d="M15 19V5"/></svg>
+        <ArrowUpDown size={16} color="var(--text3)" />
         <span style={{ fontSize: 12, color: 'var(--text3)' }}>Arraste o ícone da casinha para trocar o hóspede de quarto instantaneamente</span>
       </div>
 
       {modalStatus && <ModalAlterarStatus quarto={modalStatus} onClose={() => setModalStatus(null)} onSave={() => { setModalStatus(null); load() }} />}
+      {modalNovaReserva && <ModalNovaReserva quartoInicial={modalNovaReserva} onClose={() => setModalNovaReserva(null)} onSave={() => { setModalNovaReserva(null); load() }} />}
+      {modalDetalhes && <ModalDetalhesReserva reserva={modalDetalhes} onClose={() => setModalDetalhes(null)} />}
+      {modalCheckout && <ModalCheckout reserva={modalCheckout} onClose={() => setModalCheckout(null)} onSave={() => { setModalCheckout(null); load() }} />}
     </div>
   )
 }
@@ -281,7 +289,7 @@ function ModalAlterarStatus({ quarto, onClose, onSave }) {
       <div className="modal" style={{ maxWidth: 360 }} onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h3>Quarto {quarto.numero} — Status</h3>
-          <button className="btn btn-ghost btn-icon" onClick={onClose}>✕</button>
+          <button className="btn btn-ghost btn-icon" onClick={onClose}><X size={16} /></button>
         </div>
         <div className="modal-body">
           {['disponivel', 'limpeza', 'manutencao', 'bloqueado'].map(s => {

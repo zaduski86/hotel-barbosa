@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
+import { Link, ClipboardList, X, Download, MessageCircle, Check, User, Search } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { fmt, statusReservaMap, tipoQuartoMap, metodoPagMap } from '../utils/format'
-import { baixarRecibo, gerarLinkWhatsApp, gerarReciboPDF } from '../utils/pdf'
+import { gerarLinkWhatsApp, gerarReciboPDF } from '../utils/pdf'
 import toast from 'react-hot-toast'
 import dayjs from 'dayjs'
 
@@ -36,7 +37,7 @@ export function Reservas() {
         </div>
         <div className="flex gap-2">
           <button className="btn btn-secondary" onClick={() => setModalLink(true)}>
-            🔗 Reserva por link
+            <Link size={14} style={{marginRight:6}} />Reserva por link
           </button>
           <button className="btn btn-primary" onClick={() => setModal('nova')}>+ Nova reserva</button>
         </div>
@@ -44,7 +45,7 @@ export function Reservas() {
 
       <div className="card">
         {loading ? <div className="loading-center"><div className="spinner"></div></div> :
-        reservas.length === 0 ? <div className="empty-state"><div className="empty-icon">📋</div><p>Nenhuma reserva encontrada</p></div> : (
+        reservas.length === 0 ? <div className="empty-state"><div className="empty-icon"><ClipboardList size={40} color="var(--text3)" strokeWidth={1.5} /></div><p>Nenhuma reserva encontrada</p></div> : (
           <div className="table-wrap">
             <table>
               <thead><tr><th>Código</th><th>Hóspede</th><th>Quarto</th><th>Entrada</th><th>Saída</th><th>Total</th><th>Status</th><th>Pag.</th><th>Ações</th></tr></thead>
@@ -79,13 +80,14 @@ export function Reservas() {
 
       {modal === 'nova' && <ModalNovaReserva onClose={() => setModal(null)} onSave={() => { setModal(null); load() }} />}
       {modal && typeof modal === 'object' && modal.tipo === 'checkout' && <ModalCheckout reserva={modal} onClose={() => setModal(null)} onSave={() => { setModal(null); load() }} />}
+      {modal && typeof modal === 'object' && modal.tipo !== 'checkout' && <ModalDetalhesReserva reserva={modal} onClose={() => setModal(null)} />}
       {modalLink && <ModalReservaLink onClose={() => setModalLink(false)} />}
     </div>
   )
 }
 
-function ModalNovaReserva({ onClose, onSave }) {
-  const [form, setForm] = useState({ quarto_id: '', hospede_id: '', data_entrada: '', data_saida: '', observacoes: '' })
+export function ModalNovaReserva({ quartoInicial, onClose, onSave }) {
+  const [form, setForm] = useState({ quarto_id: quartoInicial?.id || '', hospede_id: '', data_entrada: '', data_saida: '', observacoes: '' })
   const [quartos, setQuartos] = useState([])
   const [hospedes, setHospedes] = useState([])
   const [busca, setBusca] = useState('')
@@ -125,7 +127,7 @@ function ModalNovaReserva({ onClose, onSave }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal modal-lg" onClick={e => e.stopPropagation()}>
-        <div className="modal-header"><h3>Nova reserva</h3><button className="btn btn-ghost btn-icon" onClick={onClose}>✕</button></div>
+        <div className="modal-header"><h3>Nova reserva</h3><button className="btn btn-ghost btn-icon" onClick={onClose}><X size={16} /></button></div>
         <div className="modal-body">
           <div className="form-group">
             <label>Hóspede <span className="req">*</span></label>
@@ -168,7 +170,7 @@ function ModalNovaReserva({ onClose, onSave }) {
   )
 }
 
-function ModalCheckout({ reserva, onClose, onSave }) {
+export function ModalCheckout({ reserva, onClose, onSave }) {
   const [consumos, setConsumos] = useState([])
   const [pagamentos, setPagamentos] = useState([])
   const [itensRemovidos, setItensRemovidos] = useState([])
@@ -207,7 +209,7 @@ function ModalCheckout({ reserva, onClose, onSave }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal modal-lg" onClick={e => e.stopPropagation()}>
-        <div className="modal-header"><h3>Check-out — {reserva.hospedes?.nome}</h3><button className="btn btn-ghost btn-icon" onClick={onClose}>✕</button></div>
+        <div className="modal-header"><h3>Check-out — {reserva.hospedes?.nome}</h3><button className="btn btn-ghost btn-icon" onClick={onClose}><X size={16} /></button></div>
         <div className="modal-body">
           <div className="alert alert-info">Revise o resumo abaixo. Remova itens que não devem ser cobrados antes de finalizar.</div>
 
@@ -237,13 +239,39 @@ function ModalCheckout({ reserva, onClose, onSave }) {
           </div>
 
           <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
-            <button className="btn btn-secondary w-full" onClick={() => enviarPDF('download')}>⬇️ Baixar PDF</button>
-            <button className="btn btn-success w-full" onClick={() => enviarPDF('whatsapp')}>📱 WhatsApp</button>
+            <button className="btn btn-secondary w-full" onClick={() => enviarPDF('download')}><Download size={14} style={{marginRight:6}} />Baixar PDF</button>
+            <button className="btn btn-success w-full" onClick={() => enviarPDF('whatsapp')}><MessageCircle size={14} style={{marginRight:6}} />WhatsApp</button>
           </div>
         </div>
         <div className="modal-footer">
           <button className="btn btn-secondary" onClick={onClose}>Cancelar</button>
-          <button className="btn btn-primary" onClick={confirmar} disabled={loading}>{loading ? <span className="spinner"></span> : '✅ Confirmar check-out'}</button>
+          <button className="btn btn-primary" onClick={confirmar} disabled={loading}>{loading ? <span className="spinner"></span> : <><Check size={14} style={{marginRight:6}} />Confirmar check-out</>}</button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export function ModalDetalhesReserva({ reserva, onClose }) {
+  const s = statusReservaMap[reserva.status]
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className="modal-header"><h3>Reserva {reserva.codigo || ''}</h3><button className="btn btn-ghost btn-icon" onClick={onClose}><X size={16} /></button></div>
+        <div className="modal-body">
+          <div className="flex-between mb-2"><span style={{ color: 'var(--text2)' }}>Hóspede</span><strong>{reserva.hospedes?.nome || '—'}</strong></div>
+          <div className="flex-between mb-2"><span style={{ color: 'var(--text2)' }}>Telefone</span><span>{reserva.hospedes?.telefone || '—'}</span></div>
+          <div className="flex-between mb-2"><span style={{ color: 'var(--text2)' }}>Quarto</span><span>#{reserva.quartos?.numero || '—'}</span></div>
+          <div className="flex-between mb-2"><span style={{ color: 'var(--text2)' }}>Check-in</span><span>{fmt.date(reserva.data_entrada)}</span></div>
+          <div className="flex-between mb-2"><span style={{ color: 'var(--text2)' }}>Check-out</span><span>{fmt.date(reserva.data_saida)}</span></div>
+          <div className="flex-between mb-2"><span style={{ color: 'var(--text2)' }}>Diárias</span><span>{reserva.total_diarias} × {fmt.money(reserva.valor_diaria)}</span></div>
+          <div className="flex-between mb-2"><span style={{ color: 'var(--text2)' }}>Total</span><strong>{fmt.money(reserva.valor_total)}</strong></div>
+          <div className="flex-between mb-2"><span style={{ color: 'var(--text2)' }}>Status</span><span className={`badge ${s?.badge}`}>{s?.label}</span></div>
+          <div className="flex-between"><span style={{ color: 'var(--text2)' }}>Pagamento</span><span className={`badge ${reserva.status_pagamento === 'pago' ? 'badge-green' : reserva.status_pagamento === 'parcial' ? 'badge-amber' : 'badge-red'}`}>{reserva.status_pagamento}</span></div>
+          {reserva.observacoes && <div style={{ marginTop: 12, fontSize: 13, color: 'var(--text2)' }}><strong>Observações:</strong> {reserva.observacoes}</div>}
+        </div>
+        <div className="modal-footer">
+          <button className="btn btn-secondary" onClick={onClose}>Fechar</button>
         </div>
       </div>
     </div>
@@ -270,7 +298,7 @@ function ModalReservaLink({ onClose }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" style={{ maxWidth: 440 }} onClick={e => e.stopPropagation()}>
-        <div className="modal-header"><h3>Solicitar reserva por link</h3><button className="btn btn-ghost btn-icon" onClick={onClose}>✕</button></div>
+        <div className="modal-header"><h3>Solicitar reserva por link</h3><button className="btn btn-ghost btn-icon" onClick={onClose}><X size={16} /></button></div>
         <div className="modal-body">
           <div className="form-group">
             <label>Telefone do cliente</label>
@@ -283,7 +311,7 @@ function ModalReservaLink({ onClose }) {
               <div style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, padding: 12, marginBottom: 12, wordBreak: 'break-all', fontSize: 12, fontFamily: 'monospace' }}>{link}</div>
               <div style={{ display: 'flex', gap: 10 }}>
                 <button className="btn btn-secondary w-full" onClick={() => { navigator.clipboard.writeText(link); toast.success('Link copiado!') }}>Copiar link</button>
-                {telefone && <button className="btn btn-success w-full" onClick={enviar}>📱 Enviar WhatsApp</button>}
+                {telefone && <button className="btn btn-success w-full" onClick={enviar}><MessageCircle size={14} style={{marginRight:6}} />Enviar WhatsApp</button>}
               </div>
             </div>
           )}
@@ -314,11 +342,14 @@ export function Hospedes() {
   return (
     <div>
       <div className="flex-between mb-4">
-        <input placeholder="🔍 Buscar por nome, CPF ou e-mail..." value={busca} onChange={e => setBusca(e.target.value)} style={{ maxWidth: 320 }} />
+        <div style={{position:'relative'}}>
+          <Search size={14} color="var(--text3)" style={{position:'absolute', left:10, top:'50%', transform:'translateY(-50%)'}} />
+          <input placeholder="Buscar por nome, CPF ou e-mail..." value={busca} onChange={e => setBusca(e.target.value)} style={{ maxWidth: 320, paddingLeft: 32 }} />
+        </div>
         <button className="btn btn-primary" onClick={() => setModal('novo')}>+ Novo hóspede</button>
       </div>
       <div className="card">
-        {loading ? <div className="loading-center"><div className="spinner"></div></div> : hospedes.length === 0 ? <div className="empty-state"><div className="empty-icon">👤</div><p>Nenhum hóspede encontrado</p></div> : (
+        {loading ? <div className="loading-center"><div className="spinner"></div></div> : hospedes.length === 0 ? <div className="empty-state"><div className="empty-icon"><User size={40} color="var(--text3)" strokeWidth={1.5} /></div><p>Nenhum hóspede encontrado</p></div> : (
           <div className="table-wrap">
             <table>
               <thead><tr><th>Nome</th><th>CPF</th><th>Telefone</th><th>E-mail</th><th>Cidade</th><th>Ações</th></tr></thead>
@@ -346,7 +377,7 @@ export function Hospedes() {
 }
 
 function ModalHospede({ hospede, onClose, onSave }) {
-  const [form, setForm] = useState(hospede || { nome: '', cpf: '', rg: '', data_nascimento: '', email: '', telefone: '', cep: '', endereco: '', numero_end: '', bairro: '', cidade: '', estado: '' })
+  const [form, setForm] = useState(hospede || { nome: '', cpf: '', rg: '', profissao: '', data_nascimento: '', email: '', telefone: '', cep: '', endereco: '', numero_end: '', bairro: '', cidade: '', estado: '' })
   const [loading, setLoading] = useState(false)
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
 
@@ -370,7 +401,7 @@ function ModalHospede({ hospede, onClose, onSave }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal modal-xl" onClick={e => e.stopPropagation()}>
-        <div className="modal-header"><h3>{hospede ? 'Editar hóspede' : 'Novo hóspede'}</h3><button className="btn btn-ghost btn-icon" onClick={onClose}>✕</button></div>
+        <div className="modal-header"><h3>{hospede ? 'Editar hóspede' : 'Novo hóspede'}</h3><button className="btn btn-ghost btn-icon" onClick={onClose}><X size={16} /></button></div>
         <div className="modal-body">
           <div className="form-row form-row-3">
             <div className="form-group" style={{ gridColumn: '1/3' }}><label>Nome completo <span className="req">*</span></label><input value={form.nome} onChange={e => set('nome', e.target.value)} /></div>
@@ -379,7 +410,7 @@ function ModalHospede({ hospede, onClose, onSave }) {
           <div className="form-row form-row-3">
             <div className="form-group"><label>CPF</label><input value={form.cpf} onChange={e => set('cpf', e.target.value)} placeholder="000.000.000-00" /></div>
             <div className="form-group"><label>RG</label><input value={form.rg} onChange={e => set('rg', e.target.value)} /></div>
-            <div className="form-group"><label>Profissão</label><input value={form.profissao} onChange={e => set('profissao', e.target.value)} /></div>
+            <div className="form-group"><label>Profissão</label><input value={form.profissao || ''} onChange={e => set('profissao', e.target.value)} /></div>
           </div>
           <div className="form-row form-row-2">
             <div className="form-group"><label>E-mail</label><input type="email" value={form.email} onChange={e => set('email', e.target.value)} /></div>
@@ -506,7 +537,7 @@ function ModalQuarto({ quarto, onClose, onSave }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal modal-lg" onClick={e => e.stopPropagation()}>
-        <div className="modal-header"><h3>{quarto ? `Editar quarto #${quarto.numero}` : 'Novo quarto'}</h3><button className="btn btn-ghost btn-icon" onClick={onClose}>✕</button></div>
+        <div className="modal-header"><h3>{quarto ? `Editar quarto #${quarto.numero}` : 'Novo quarto'}</h3><button className="btn btn-ghost btn-icon" onClick={onClose}><X size={16} /></button></div>
         <div className="modal-body">
           <div className="form-row form-row-2">
             <div className="form-group"><label>Número <span className="req">*</span></label><input value={form.numero} onChange={e => set('numero', e.target.value)} placeholder="101" /></div>

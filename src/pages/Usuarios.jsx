@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import toast from 'react-hot-toast'
+import { CheckCircle2, Hotel, Mail, KeyRound, User, Link, Copy, X, Crown, Check, Plus } from 'lucide-react'
 
 const permissoesPadrao = {
   gestor: { reservas: true, hospedes: true, quartos: true, financeiro: true, configuracoes: true, usuarios: true },
@@ -25,23 +26,23 @@ function ModalCredenciais({ usuario, onClose }) {
       <div className="modal" style={{ maxWidth: 480 }}>
         <div className="modal-header">
           <div>
-            <h3>✅ Usuário criado com sucesso!</h3>
+            <h3><CheckCircle2 size={18} style={{marginRight:6}} />Usuário criado com sucesso!</h3>
             <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 2 }}>Envie as credenciais para {usuario.nome}</div>
           </div>
         </div>
         <div className="modal-body">
           <div className="credenciais-box">
-            <div>🏨 <strong>Hotel Barbosa 24 Horas</strong></div>
+            <div><Hotel size={14} style={{marginRight:6, display:'inline'}} /><strong>Hotel Barbosa 24 Horas</strong></div>
             <div style={{ marginTop: 8, lineHeight: 1.9 }}>
-              <div>📧 <strong>E-mail:</strong> {usuario.email}</div>
-              <div>🔑 <strong>Senha:</strong> <span style={{ background: 'var(--accent-light)', padding: '1px 6px', borderRadius: 4, color: 'var(--accent)' }}>{usuario.senha_temp}</span></div>
-              <div>👤 <strong>Cargo:</strong> {usuario.cargo === 'gestor' ? 'Gestor' : 'Recepcionista'}</div>
-              <div>🔗 <strong>Acesso:</strong> {window.location.origin}</div>
+              <div><Mail size={14} style={{marginRight:6, display:'inline'}} /><strong>E-mail:</strong> {usuario.email}</div>
+              <div><KeyRound size={14} style={{marginRight:6, display:'inline'}} /><strong>Senha:</strong> <span style={{ background: 'var(--accent-light)', padding: '1px 6px', borderRadius: 4, color: 'var(--accent)' }}>{usuario.senha_temp}</span></div>
+              <div><User size={14} style={{marginRight:6, display:'inline'}} /><strong>Cargo:</strong> {usuario.cargo === 'gestor' ? 'Gestor' : 'Recepcionista'}</div>
+              <div><Link size={14} style={{marginRight:6, display:'inline'}} /><strong>Acesso:</strong> {window.location.origin}</div>
             </div>
           </div>
           <div style={{ display: 'flex', gap: 10, marginTop: 14 }}>
             <button className="btn btn-secondary w-full" onClick={copiar}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              <Copy size={14} style={{marginRight:6}} />
               Copiar texto
             </button>
             {usuario.telefone && (
@@ -107,7 +108,7 @@ function ModalUsuario({ usuario, onClose, onSave }) {
       <div className="modal" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h3>{usuario ? 'Editar usuário' : 'Novo usuário'}</h3>
-          <button className="btn btn-ghost btn-icon" onClick={onClose}>✕</button>
+          <button className="btn btn-ghost btn-icon" onClick={onClose}><X size={16} /></button>
         </div>
         <div className="modal-body">
           {erro && <div className="alert alert-error">{erro}</div>}
@@ -139,8 +140,8 @@ function ModalUsuario({ usuario, onClose, onSave }) {
             <label>Tipo de acesso <span className="req">*</span></label>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 4 }}>
               {[
-                { key: 'recepcionista', label: 'Recepcionista', desc: 'Reservas e hóspedes', icon: '👤' },
-                { key: 'gestor', label: 'Gestor', desc: 'Acesso completo', icon: '👑' },
+                { key: 'recepcionista', label: 'Recepcionista', desc: 'Reservas e hóspedes', icon: <User size={24} /> },
+                { key: 'gestor', label: 'Gestor', desc: 'Acesso completo', icon: <Crown size={24} /> },
               ].map(tipo => (
                 <div
                   key={tipo.key}
@@ -160,7 +161,7 @@ function ModalUsuario({ usuario, onClose, onSave }) {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
               {Object.entries(permissoesPadrao[form.cargo] || {}).map(([k, v]) => (
                 <div key={k} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
-                  <span style={{ color: v ? 'var(--green)' : 'var(--text3)' }}>{v ? '✓' : '✗'}</span>
+                  <span style={{ color: v ? 'var(--green)' : 'var(--text3)' }}>{v ? <Check size={14} color="var(--green)" /> : <X size={14} color="var(--text3)" />}</span>
                   <span style={{ color: v ? 'var(--text)' : 'var(--text3)', textTransform: 'capitalize' }}>{k}</span>
                 </div>
               ))}
@@ -210,14 +211,14 @@ export default function Usuarios() {
           <div style={{ fontSize: 13, color: 'var(--text3)' }}>{usuarios.length} usuário(s) cadastrado(s)</div>
         </div>
         <button className="btn btn-primary" onClick={() => setModal('novo')}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <Plus size={14} style={{marginRight:6}} />
           Novo usuário
         </button>
       </div>
 
       <div className="card">
         {loading ? <div className="loading-center"><div className="spinner"></div></div> : usuarios.length === 0 ? (
-          <div className="empty-state"><div className="empty-icon">👤</div><p>Nenhum usuário cadastrado</p></div>
+          <div className="empty-state"><div className="empty-icon"><User size={40} color="var(--text3)" strokeWidth={1.5} /></div><p>Nenhum usuário cadastrado</p></div>
         ) : (
           <div className="table-wrap">
             <table>
@@ -239,7 +240,7 @@ export default function Usuarios() {
                     <td>{u.telefone || '—'}</td>
                     <td>
                       <span className={`badge ${u.cargo === 'gestor' ? 'badge-purple' : 'badge-blue'}`}>
-                        {u.cargo === 'gestor' ? '👑 Gestor' : '👤 Recepcionista'}
+                        {u.cargo === 'gestor' ? <><Crown size={12} style={{marginRight:4}} />Gestor</> : <><User size={12} style={{marginRight:4}} />Recepcionista</>}
                       </span>
                     </td>
                     <td>

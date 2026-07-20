@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase'
 import { fmt } from '../utils/format'
 import toast from 'react-hot-toast'
 import dayjs from 'dayjs'
+import { X, Check, ShoppingCart } from 'lucide-react'
 
 function ModalConsumo({ reserva, onClose, onSave }) {
   const [produtos, setProdutos] = useState([])
@@ -52,7 +53,7 @@ function ModalConsumo({ reserva, onClose, onSave }) {
             <h3>Registrar consumo</h3>
             <div style={{ fontSize: 12, color: 'var(--text3)' }}>{reserva.hospedes?.nome} — Quarto #{reserva.quartos?.numero}</div>
           </div>
-          <button className="btn btn-ghost btn-icon" onClick={onClose}>✕</button>
+          <button className="btn btn-ghost btn-icon" onClick={onClose}><X size={16} /></button>
         </div>
         <div className="modal-body">
           <div className="tabs" style={{ marginBottom: 16 }}>
@@ -102,7 +103,7 @@ function ModalConsumo({ reserva, onClose, onSave }) {
         </div>
         <div className="modal-footer">
           <button className="btn btn-secondary" onClick={onClose}>Cancelar</button>
-          <button className="btn btn-primary" onClick={registrar} disabled={loading}>{loading ? <span className="spinner"></span> : '✅ Registrar'}</button>
+          <button className="btn btn-primary" onClick={registrar} disabled={loading}>{loading ? <span className="spinner"></span> : <><Check size={14} style={{marginRight:6}} />Registrar</>}</button>
         </div>
       </div>
     </div>
@@ -169,7 +170,7 @@ export default function Consumos() {
       {modal === 'selecionar' && (
         <div className="modal-overlay" onClick={() => setModal(null)}>
           <div className="modal" style={{ maxWidth: 380 }} onClick={e => e.stopPropagation()}>
-            <div className="modal-header"><h3>Selecionar quarto</h3><button className="btn btn-ghost btn-icon" onClick={() => setModal(null)}>✕</button></div>
+            <div className="modal-header"><h3>Selecionar quarto</h3><button className="btn btn-ghost btn-icon" onClick={() => setModal(null)}><X size={16} /></button></div>
             <div className="modal-body">
               {reservasAtivas.map(r => (
                 <div key={r.id} onClick={() => setModal(r)} style={{ padding: '12px 14px', borderRadius: 8, cursor: 'pointer', border: '1px solid var(--border)', marginBottom: 8, background: 'var(--surface2)', transition: 'background .15s' }}>
@@ -184,7 +185,7 @@ export default function Consumos() {
 
       <div className="card">
         {loading ? <div className="loading-center"><div className="spinner"></div></div> :
-         consumosFiltrados.length === 0 ? <div className="empty-state"><div className="empty-icon">🛒</div><p>Nenhum consumo registrado</p></div> : (
+         consumosFiltrados.length === 0 ? <div className="empty-state"><div className="empty-icon"><ShoppingCart size={40} color="var(--text3)" strokeWidth={1.5} /></div><p>Nenhum consumo registrado</p></div> : (
           <div className="table-wrap">
             <table>
               <thead><tr><th>Quarto</th><th>Hóspede</th><th>Item</th><th>Qtd</th><th>Valor unit.</th><th>Total</th><th>Horário</th><th></th></tr></thead>

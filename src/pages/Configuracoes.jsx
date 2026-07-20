@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { fmt } from '../utils/format'
 import toast from 'react-hot-toast'
+import { Hotel, ShoppingCart, Settings, AlertTriangle, X } from 'lucide-react'
 
 export default function Configuracoes() {
   const [tab, setTab] = useState('hotel')
@@ -44,8 +45,10 @@ export default function Configuracoes() {
   return (
     <div>
       <div className="tabs">
-        {[{ k: 'hotel', l: '🏨 Dados do hotel' }, { k: 'produtos', l: '🛒 Produtos e serviços' }, { k: 'sistema', l: '⚙️ Sistema' }].map(t => (
-          <div key={t.k} className={`tab ${tab === t.k ? 'active' : ''}`} onClick={() => setTab(t.k)}>{t.l}</div>
+        {[{ k: 'hotel', icon: Hotel, l: 'Dados do hotel' }, { k: 'produtos', icon: ShoppingCart, l: 'Produtos e serviços' }, { k: 'sistema', icon: Settings, l: 'Sistema' }].map(t => (
+          <div key={t.k} className={`tab ${tab === t.k ? 'active' : ''}`} onClick={() => setTab(t.k)}>
+            <span style={{ display: 'flex', alignItems: 'center' }}><t.icon size={14} style={{ marginRight: 6 }} />{t.l}</span>
+          </div>
         ))}
       </div>
 
@@ -131,7 +134,7 @@ export default function Configuracoes() {
           </div>
 
           <div className="card">
-            <div className="card-title" style={{ marginBottom: 12 }}>⚠️ Zona de risco</div>
+            <div className="card-title" style={{ marginBottom: 12 }}><AlertTriangle size={16} style={{ marginRight: 6 }} color="var(--red)" />Zona de risco</div>
             <p style={{ fontSize: 13, color: 'var(--text3)', marginBottom: 14 }}>Ações irreversíveis. Use com cuidado.</p>
             <button className="btn btn-danger" onClick={() => { if (confirm('Limpar dados de teste? Esta ação não pode ser desfeita!')) toast.error('Função disponível apenas para administradores') }}>
               Limpar dados de teste
@@ -163,7 +166,7 @@ function ModalProduto({ produto, onClose, onSave }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" style={{ maxWidth: 420 }} onClick={e => e.stopPropagation()}>
-        <div className="modal-header"><h3>{produto ? 'Editar produto' : 'Novo produto'}</h3><button className="btn btn-ghost btn-icon" onClick={onClose}>✕</button></div>
+        <div className="modal-header"><h3>{produto ? 'Editar produto' : 'Novo produto'}</h3><button className="btn btn-ghost btn-icon" onClick={onClose}><X size={16} /></button></div>
         <div className="modal-body">
           <div className="form-group"><label>Nome <span className="req">*</span></label><input value={form.nome} onChange={e => set('nome', e.target.value)} placeholder="Ex: Água mineral 500ml" /></div>
           <div className="form-row form-row-2">

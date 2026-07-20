@@ -1,23 +1,24 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
+import { Home, Calendar, Users, CreditCard, ShoppingBag, Wallet, Receipt, BedDouble, BarChart3, User, Settings, Menu, X } from 'lucide-react'
 
 const nav = [
   { section: 'Principal', items: [
-    { to: '/', label: 'Mapa de quartos', emoji: '🏠' },
-    { to: '/reservas', label: 'Reservas', emoji: '📅' },
-    { to: '/hospedes', label: 'Hóspedes', emoji: '👥' },
+    { to: '/', label: 'Mapa de quartos', Icon: Home },
+    { to: '/reservas', label: 'Reservas', Icon: Calendar },
+    { to: '/hospedes', label: 'Hóspedes', Icon: Users },
   ]},
   { section: 'Financeiro', items: [
-    { to: '/pagamentos', label: 'Recebimentos', emoji: '💳' },
-    { to: '/consumos', label: 'Produtos e serviços', emoji: '🛍️' },
-    { to: '/gastos', label: 'Gastos do hotel', emoji: '💰' },
-    { to: '/recibos', label: 'Vouchers e recibos', emoji: '🧾' },
+    { to: '/pagamentos', label: 'Recebimentos', Icon: CreditCard },
+    { to: '/consumos', label: 'Produtos e serviços', Icon: ShoppingBag },
+    { to: '/gastos', label: 'Gastos do hotel', Icon: Wallet },
+    { to: '/recibos', label: 'Vouchers e recibos', Icon: Receipt },
   ]},
   { section: 'Gestão', items: [
-    { to: '/quartos', label: 'Gestão de quartos', emoji: '🛏️' },
-    { to: '/relatorios', label: 'Relatórios', emoji: '📊' },
-    { to: '/usuarios', label: 'Usuários', emoji: '👤' },
-    { to: '/configuracoes', label: 'Configurações', emoji: '⚙️' },
+    { to: '/quartos', label: 'Gestão de quartos', Icon: BedDouble },
+    { to: '/relatorios', label: 'Relatórios', Icon: BarChart3 },
+    { to: '/usuarios', label: 'Usuários', Icon: User },
+    { to: '/configuracoes', label: 'Configurações', Icon: Settings },
   ]},
 ]
 
@@ -35,7 +36,7 @@ export default function Sidebar({ user, onLogout }) {
         display: 'none', alignItems: 'center', justifyContent: 'center',
         boxShadow: '0 2px 8px rgba(0,0,0,0.25)'
       }} className="hamburguer">
-        {open ? '✕' : '☰'}
+        {open ? <X size={20} /> : <Menu size={20} />}
       </button>
 
       {/* Overlay escuro quando aberto no mobile */}
@@ -49,25 +50,20 @@ export default function Sidebar({ user, onLogout }) {
       {/* Sidebar */}
       <aside className={`sidebar${open ? ' sidebar-open' : ''}`}>
         {/* Header */}
-        <div className="sidebar-header">
-          <div className="sidebar-logo">
-            <div className="sidebar-logo-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-                <polyline points="9,22 9,12 15,12 15,22"/>
-              </svg>
-            </div>
-            <div>
-              <div className="sidebar-hotel-name">Hotel Barbosa</div>
-              <div className="sidebar-hotel-sub">24 Horas</div>
-            </div>
+        <div className="sidebar-logo">
+          <div className="sidebar-logo-icon">
+            <Home size={22} color="white" strokeWidth={2} />
+          </div>
+          <div>
+            <div className="sidebar-hotel-name">Hotel Barbosa</div>
+            <div className="sidebar-hotel-sub">24 Horas</div>
           </div>
         </div>
 
         {/* Nav */}
         <nav className="sidebar-nav">
           {nav.map(group => (
-            <div key={group.section} className="sidebar-section">
+            <div key={group.section}>
               <div className="sidebar-section-title">{group.section}</div>
               {group.items.map(item => (
                 <NavLink
@@ -76,7 +72,7 @@ export default function Sidebar({ user, onLogout }) {
                   onClick={() => setOpen(false)}
                   className={({ isActive }) => 'sidebar-item' + (isActive ? ' active' : '')}
                 >
-                  <span style={{ fontSize: 16, minWidth: 22 }}>{item.emoji}</span>
+                  <item.Icon size={16} style={{ minWidth: 16 }} />
                   <span>{item.label}</span>
                 </NavLink>
               ))}
@@ -96,27 +92,6 @@ export default function Sidebar({ user, onLogout }) {
           <button className="sidebar-logout" onClick={onLogout}>Sair</button>
         </div>
       </aside>
-
-      <style>{`
-        @media (max-width: 768px) {
-          .hamburguer { display: flex !important; }
-          .mob-overlay { display: block !important; }
-          .sidebar {
-            position: fixed !important;
-            left: -260px !important;
-            top: 0 !important;
-            height: 100vh !important;
-            z-index: 1080 !important;
-            transition: left 0.25s ease !important;
-            box-shadow: 4px 0 20px rgba(0,0,0,0.3) !important;
-          }
-          .sidebar.sidebar-open {
-            left: 0 !important;
-          }
-          .main { margin-left: 0 !important; }
-          .topbar { padding-left: 64px !important; }
-        }
-      `}</style>
     </>
   )
 }

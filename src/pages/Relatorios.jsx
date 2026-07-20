@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { fmt } from '../utils/format'
 import dayjs from 'dayjs'
+import { Download, ClipboardList } from 'lucide-react'
 
 export default function Relatorios() {
   const [mes, setMes] = useState(dayjs().format('YYYY-MM'))
@@ -92,7 +93,7 @@ export default function Relatorios() {
     <div>
       <div className="flex-between mb-6">
         <input type="month" value={mes} onChange={e => setMes(e.target.value)} style={{ width: 'auto' }} />
-        <button className="btn btn-secondary" onClick={exportarCSV}>⬇️ Exportar CSV</button>
+        <button className="btn btn-secondary" onClick={exportarCSV}><Download size={14} style={{ marginRight: 6 }} />Exportar CSV</button>
       </div>
 
       {loading ? <div className="loading-center"><div className="spinner"></div></div> : dados && (
@@ -162,7 +163,7 @@ export default function Relatorios() {
 
           <div className="card mb-4">
             <div className="card-header"><div className="card-title">Reservas do mês</div></div>
-            {dados.reservas.length === 0 ? <div className="empty-state"><div className="empty-icon">📋</div><p>Nenhuma reserva neste mês</p></div> : (
+            {dados.reservas.length === 0 ? <div className="empty-state"><div className="empty-icon"><ClipboardList size={40} color="var(--text3)" strokeWidth={1.5} /></div><p>Nenhuma reserva neste mês</p></div> : (
               <div className="table-wrap">
                 <table>
                   <thead><tr><th>Hóspede</th><th>Quarto</th><th>Entrada</th><th>Saída</th><th>Diárias</th><th>Valor</th></tr></thead>
