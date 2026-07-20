@@ -63,30 +63,30 @@ body {
   margin-bottom: 10px;
 }
 
-.sidebar-logo h1 { font-size: 13px; font-weight: 600; color: #fff; line-height: 1.3; }
-.sidebar-logo span { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 2px; display: block; }
+.sidebar-hotel-name { font-size: 13px; font-weight: 600; color: #fff; line-height: 1.3; }
+.sidebar-hotel-sub { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 2px; display: block; }
 
 .sidebar-nav { padding: 10px 8px; flex: 1; }
-.nav-section { font-size: 9px; font-weight: 600; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 1px; padding: 10px 10px 4px; }
+.sidebar-section-title { font-size: 9px; font-weight: 600; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 1px; padding: 10px 10px 4px; }
 
-.nav-item {
+.sidebar-item {
   display: flex; align-items: center; gap: 9px;
   padding: 8px 10px; border-radius: 8px;
   color: var(--sidebar-text); font-size: 13px; font-weight: 400;
   cursor: pointer; transition: all .15s; text-decoration: none;
   position: relative; margin: 1px 0;
 }
-.nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); }
-.nav-item.active { background: var(--sidebar-active); color: var(--sidebar-active-text); font-weight: 500; }
-.nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
-.nav-badge { margin-left: auto; background: rgba(239,68,68,0.2); color: #fca5a5; font-size: 9px; padding: 1px 6px; border-radius: 10px; font-weight: 600; }
+.sidebar-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); }
+.sidebar-item.active { background: var(--sidebar-active); color: var(--sidebar-active-text); font-weight: 500; }
 
-.sidebar-bottom { padding: 12px; border-top: 1px solid var(--sidebar-border); }
+.sidebar-footer { padding: 12px; border-top: 1px solid var(--sidebar-border); display: flex; flex-direction: column; gap: 8px; }
 .sidebar-user { display: flex; align-items: center; gap: 9px; cursor: pointer; padding: 6px 8px; border-radius: 8px; transition: background .15s; }
 .sidebar-user:hover { background: rgba(255,255,255,0.06); }
-.user-avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg,#6366f1,#8b5cf6); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #fff; flex-shrink: 0; }
-.user-name { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.7); }
-.user-role { font-size: 10px; color: rgba(255,255,255,0.3); }
+.sidebar-avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg,#6366f1,#8b5cf6); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #fff; flex-shrink: 0; }
+.sidebar-user-name { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.7); }
+.sidebar-user-role { font-size: 10px; color: rgba(255,255,255,0.3); }
+.sidebar-logout { padding: 7px 10px; border-radius: 8px; border: 1px solid var(--sidebar-border); background: transparent; color: var(--sidebar-text); font-size: 12px; cursor: pointer; transition: background .15s; }
+.sidebar-logout:hover { background: rgba(255,255,255,0.06); color: #fff; }
 
 .main { margin-left: 220px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
 
@@ -316,9 +316,6 @@ tbody tr:hover { background: var(--surface2); }
 
 /* ---- RESPONSIVE ---- */
 @media (max-width: 768px) {
-  .sidebar { transform: translateX(-100%); transition: transform .25s; }
-  .sidebar.open { transform: translateX(0); }
-  .main { margin-left: 0; }
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .rooms-grid { grid-template-columns: repeat(2, 1fr); }
   .form-row-2, .form-row-3 { grid-template-columns: 1fr; }
