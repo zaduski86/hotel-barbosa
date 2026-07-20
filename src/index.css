@@ -416,3 +416,42 @@ tbody tr:hover { background: var(--surface2); }
     display: none !important;
   }
 }
+
+/* ---- LOGIN ---- */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  background-image: url(/hotel-bg.jpg);
+  background-size: cover;
+  background-position: center;
+  padding: 20px;
+}
+.login-banner-mobile { display: none; }
+.login-card { width: 340px; max-width: 100%; margin-right: 5%; }
+
+@media (max-width: 768px) {
+  .login-page {
+    background-image: none;
+    background-color: #f4ecd8;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0;
+  }
+  .login-banner-mobile {
+    display: block;
+    width: 100%;
+    height: 190px;
+    background-image: url(/hotel-bg-mobile.jpg);
+    background-size: cover;
+    background-position: center;
+    flex-shrink: 0;
+  }
+  .login-card {
+    width: 100%;
+    max-width: 340px;
+    margin: 28px 20px 40px;
+  }
+}
